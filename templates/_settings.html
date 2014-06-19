@@ -1,0 +1,29 @@
+{% import "_includes/forms" as forms %}
+
+
+{{ forms.textField({
+label: "Key"|t,
+id: 'key',
+name: 'key',
+instructions: "The key that will verify calls to the plugin. This must be set for calls to work."|t,
+value: settings.key,
+autofocus: true,
+errors: settings.getErrors('key')
+}) }}
+
+
+{% set key = settings.key ? settings.key : '1234567890' %}
+
+<hr />
+
+<h2>Examples</h2>
+
+<p>Simply create a GET or a POST request to the action URL.</p>
+
+<h3>Template</h3>
+
+<code>{{ "{{ siteUrl(craft.config.get('actionTrigger') ~ '/cacheClear/clear', { key: '" ~ key ~ "' }) }}"|raw }}</code>
+
+<h3>URL</h3>
+
+<code>{{ siteUrl(craft.config.get('actionTrigger') ~ '/cacheClear/clear', { key: key }) }}</code>
