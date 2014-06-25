@@ -21,29 +21,19 @@ class m160624_000000_cacheClear_addLogsTable extends BaseMigration
             'remoteIpAddress' => ColumnType::Varchar,
         );
 
-        // this is a foreach loop, enough said
-        foreach ($newColumns as $columnName => $columnType)
+        // check if the table exists
+        if (!craft()->db->tableExists($tableName))
         {
-            // check if the column does NOT exist
-            if (!craft()->db->columnExists($tableName, $columnName))
-            {
-                // add the column to the table
-                $this->addColumn($tableName, $columnName, array(
-                        'column' => $columnType,
-                        'required' => false)
-                );
+            // create the table and add columns
+            $this->createTable($tableName, array(
+                'remoteIpAddress' => array(
+                    'column' => ColumnType::Varchar,
+                    ),
+                )
+            );
 
-                // log that we created the new column
-                SproutSeoPlugin::log("Created the `$columnName` in the `$tableName` table.", LogLevel::Info, true);
-            }
-
-            // if the column already exists in the table
-            else {
-
-                // tell craft that we couldn't create the column as it alredy exists.
-                SproutSeoPlugin::log("Column `$columnName` already exists in the `$tableName` table.", LogLevel::Info, true);
-
-            }
+            // create the index
+            $this->createIndex($tableName, 'remoteIpAddress', true);
         }
 
         // return true and let craft know its done
