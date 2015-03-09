@@ -1,47 +1,37 @@
-<?php
-namespace Craft;
+<?php namespace Craft;
 
-
-/**
- * Class DeployController
- * @package Craft
- */
 class CacheClearController extends BaseController {
 
-    /**
-     * @var array
-     */
-    protected $allowAnonymous = array('actionClear');
+	/**
+	 * Allow anonymous access to the controller.
+	 *
+	 * @var array
+	 */
+	protected $allowAnonymous = array('actionClear');
 
-    public function actionClear()
-    {
-        // check if plugin is installed
-        if (!$plugin = craft()->plugins->getPlugin('cacheClear'))
-        {
-            die('Could not find the plugin');
-        }
+	/**
+	 * Handle the action to clear the cache.
+	 */
+	public function actionClear()
+	{
+		if (!$plugin = craft()->plugins->getPlugin('cacheClear')) {
+			die('Could not find the plugin');
+		}
 
-        // get settings
-        $settings = $plugin->getSettings();
+		$settings = $plugin->getSettings();
 
-        // get key
-        $key = craft()->request->getParam('key');
+		$key = craft()->request->getParam('key');
 
-        // verify key
-        if (!$settings->key OR $key != $settings->key)
-        {
-            die('Unauthorized key');
-        }
+		if (!$settings->key OR $key != $settings->key) {
+			die('Unauthorized key');
+		}
 
-        // delete all caches
-        craft()->templateCache->deleteAllCaches();
+		craft()->templateCache->deleteAllCaches();
 
-        // check if a redirect was posted
-        if (craft()->request->getPost('redirect'))
-        {
-            $this->redirectToPostedUrl();
-        }
+		if (craft()->request->getPost('redirect')) {
+			$this->redirectToPostedUrl();
+		}
 
-        die('Your cache cleared successfully!');
-    }
+		die('Your cache cleared successfully!');
+	}
 }
